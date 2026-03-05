@@ -1,5 +1,6 @@
 // import {readdir, readFile} from 'node:fs/promises';
 import fsPromises from 'node:fs/promises';
+import path from 'node:path';
 
 const snapshot = async () => {
   // Write your code here
@@ -8,6 +9,13 @@ const snapshot = async () => {
   // - rootPath: absolute path to workspace
   // - entries: flat array of relative paths and metadata
 
+  try {
+    const folder = path.join(import.meta.dirname, '../../workspace');
+    const res = await fsPromises.readdir(folder);
+    console.log(res);
+  } catch (error) {
+    console.log("FS error:", error.message);
+  }
 
   try {
     const data = {
@@ -19,10 +27,10 @@ const snapshot = async () => {
     };
     const testJson = JSON.stringify(data, null, 2);
     await fsPromises.writeFile("snapshot.json", testJson);
-    console.log("Snapshot is saved successfully!")
+    console.log("Snapshot is saved successfully!");
   }
   catch (error){
-    console.error("FS error:", error.message)
+    console.error("FS error:", error.message);
   }
 
 };
