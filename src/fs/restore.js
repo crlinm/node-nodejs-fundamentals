@@ -11,7 +11,6 @@ const restore = async () => {
   try {
     const snap = await fsp.readFile(snapshotPath, {encoding: 'utf8'});
     structure = JSON.parse(snap);
-    console.log(structure);
   } catch {
     throw new Error("FS operation failed");
   }
@@ -23,9 +22,17 @@ const restore = async () => {
   }
 
   try {
-    // for (item of structure) {
-    //   console.log('item:', item);
-    // }
+    for (const item of structure.entries) {
+      const itemPath = path.join(workspace_restored, item.path);
+      if (item.type === 'directory') {
+        await fsp.mkdir(itemPath, {recursive: true});
+      } else {
+        await fsp.mkdir(path.dirname(itemPath), {recursive: true})
+        const content = Buffer.from(item.content, "base64");
+        await fsp.writeFile(itemPath, content);
+      }
+    }
+    console.log("Successfully restored!")
   } catch {
     throw new Error("FS operation failed");
   }
